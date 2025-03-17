@@ -77,8 +77,12 @@
     <div id="lista" class="mt-4" style="display:none;">
         <h2>Inserisci i nomi:</h2>
         <div class="input-group mb-3 w-100 mx-auto">
-            <input type="text" id="nome" class="form-control" placeholder="Nome o Famiglia" style="width:70%;">
-            <input type="number" id="numeroPersone" class="form-control" placeholder="N. Persone" min="1" value="1" style="text-align:center;">
+            <input type="text" id="nome" class="form-control" placeholder="Nome o Famiglia" style="max-width:100%;">
+			<div class="d-flex justify-content-center">
+				<button class="btn btn-secondary" onclick="changeValue(-1)">−</button>
+				<input type="text" id="numeroPersone" class="form-control text-center" value="1" style="max-width: 80px;">
+				<button class="btn btn-primary" onclick="changeValue(1)">+</button>
+			</div>
         </div>
 		<button class="btn btn-success" onclick="aggiungiNome()">Aggiungi</button>
         <ul id="elenco" class="list-group w-100 mx-auto mt-4"></ul>
@@ -93,7 +97,34 @@
         let nomi = [];
         let personeTotali = 0;
         let messaggioBase = "Sei invitato al nostro evento! Gli ospiti confermati sono: {ospiti}. Ti aspettiamo!";
+		let numero_persone_input = document.getElementById("numeroPersone");
+		
+		function changeValue(step) {
+            let input = document.getElementById("numeroPersone");
+            let newValue = parseInt(input.value) + step;
+            if (newValue >= 1 && newValue <= 100) {
+                input.value = newValue;
+            }
+        }
+		
+		numero_persone_input.addEventListener("input", function () {
+            let value = numero_persone_input.value.trim();
 
+            if (!/^\d*$/.test(value)) {
+                alert("Inserisci solo numeri!");
+                numero_persone_input.value = value.replace(/\D/g, ""); // Rimuove caratteri non numerici
+            }
+        });
+
+        numero_persone_input.addEventListener("blur", function () {
+            let value = parseInt(numero_persone_input.value);
+
+            if (isNaN(value) || value < 1 || value > 100) {
+                numero_persone_input.value = "1"; // Reset se fuori intervallo
+                alert("Il numero deve essere tra 1 e 100!");
+            }
+        });
+		
         function impostaNumero() {
 			numeroTotale = parseInt(document.getElementById("numeroTotale").value);
 			if (numeroTotale > 0) {
