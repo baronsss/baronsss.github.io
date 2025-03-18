@@ -58,8 +58,8 @@
                     <textarea id="customMessaggio" class="form-control" rows="3" placeholder="Es. Sei invitato alla mia festa! ..."></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-                    <button class="btn btn-info" onclick="salvaMessaggio()">Salva Messaggio</button>
+                    <button class="btn btn-danger" onclick="resetMessaggio()">Reset Messaggio</button>
+                    <button class="btn btn-primary" onclick="salvaMessaggio()">Salva Messaggio</button>
                 </div>
             </div>
         </div>
@@ -104,6 +104,7 @@
             let storedNomi = localStorage.getItem("listaInvitati");
             let storedNumeroTotale = localStorage.getItem("numeroTotale");
             let storedPersoneTotali = localStorage.getItem("personeTotali");
+            let storedMessaggio = localStorage.getItem("messaggio");
 
             if (storedNomi) {
                 nomi = JSON.parse(storedNomi);
@@ -115,6 +116,12 @@
                 document.getElementById("counter").style.display = "block";
                 aggiornaLista();
                 aggiornaCounter();
+            }
+
+            if (storedMessaggio) {
+                messaggioBase = storedMessaggio;
+                document.getElementById("customMessaggio").value = messaggioBase;
+                document.getElementById("invito").value = messaggioBase;
             }
         };
 
@@ -158,8 +165,15 @@
             let customMessaggio = document.getElementById("customMessaggio").value.trim();
             if (customMessaggio) {
                 messaggioBase = customMessaggio;
+                localStorage.setItem("messaggio", messaggioBase);
                 alert("Messaggio personalizzato salvato!");
             }
+        }
+
+        function resetMessaggio() {
+            messaggioBase = "Sei invitato al nostro evento! Gli ospiti confermati sono: {ospiti}. Ti aspettiamo!";
+            localStorage.removeItem("messaggio");
+            document.getElementById("customMessaggio").value = null;
         }
 		
         function aggiungiNome() {
@@ -214,7 +228,7 @@
 				elenco.appendChild(li);
 			});
 			
-			if (personeTotali === numeroTotale) {
+			if ((personeTotali === numeroTotale) && (personeTotali > 0)) {
 				document.getElementById("messaggio").style.display = "block";
 				document.getElementById("messaggio").textContent = "Hai completato la lista!";
 				generaInvito();
