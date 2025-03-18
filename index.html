@@ -69,6 +69,7 @@
 		<label for="numeroTotale" class="form-label">Numero totale di invitati:</label>
 		<input type="number" id="numeroTotale" class="form-control w-100 mx-auto" min="1" style="text-align:center;">
 		<button class="btn btn-primary mt-2" onclick="impostaNumero()">Imposta</button>
+        <button class="btn btn-danger mt-2" onclick="resetLista()">Resetta Lista</button>
 		<p id="counter" class="mt-2" style="font-weight: bold; color: green; display: none;">
 			Persone restanti: <span id="personeRestanti"></span>
 		</p>
@@ -99,6 +100,24 @@
         let messaggioBase = "Sei invitato al nostro evento! Gli ospiti confermati sono: {ospiti}. Ti aspettiamo!";
 		let numero_persone_input = document.getElementById("numeroPersone");
 		
+        window.onload = function() {
+            let storedNomi = localStorage.getItem("listaInvitati");
+            let storedNumeroTotale = localStorage.getItem("numeroTotale");
+            let storedPersoneTotali = localStorage.getItem("personeTotali");
+
+            if (storedNomi) {
+                nomi = JSON.parse(storedNomi);
+                numeroTotale = parseInt(storedNumeroTotale) || 0;
+                personeTotali = parseInt(storedPersoneTotali) || 0;
+
+                document.getElementById("numeroTotale").value = numeroTotale;
+                document.getElementById("lista").style.display = "block";
+                document.getElementById("counter").style.display = "block";
+                aggiornaLista();
+                aggiornaCounter();
+            }
+        };
+
 		function changeValue(step) {
             let input = document.getElementById("numeroPersone");
             let newValue = parseInt(input.value) + step;
@@ -131,6 +150,7 @@
 				document.getElementById("lista").style.display = "block";
 				document.getElementById("counter").style.display = "block"; // Mostra il contatore
 				aggiornaCounter(); // Aggiorna il contatore subito dopo l'impostazione
+                localStorage.setItem("numeroTotale", numeroTotale);
 			}
 		}
 		
@@ -151,6 +171,8 @@
 				personeTotali += numeroPersone;
 				aggiornaLista();
 				aggiornaCounter(); // Aggiorna il contatore
+                localStorage.setItem("listaInvitati", JSON.stringify(nomi));
+                localStorage.setItem("personeTotali", personeTotali);
 			}
 			
 			document.getElementById("nome").value = "";
@@ -213,6 +235,8 @@
                 personeTotali += nuovoNumero;
                 aggiornaLista();
 				aggiornaCounter();
+                localStorage.setItem("listaInvitati", JSON.stringify(nomi));
+                localStorage.setItem("personeTotali", personeTotali);
             }
         }
 
@@ -221,6 +245,8 @@
 			nomi.splice(index, 1);
 			aggiornaLista();
 			aggiornaCounter(); // Aggiorna il contatore
+            localStorage.setItem("listaInvitati", JSON.stringify(nomi));
+            localStorage.setItem("personeTotali", personeTotali);
 		}
 
         function generaInvito() {
@@ -250,6 +276,20 @@
 			let personeRestanti = numeroTotale - personeTotali;
 			document.getElementById("personeRestanti").textContent = personeRestanti;
 		}
+
+        function resetLista() {
+            localStorage.removeItem("listaInvitati");
+            localStorage.removeItem("numeroTotale");
+            localStorage.removeItem("personeTotali");
+            nomi = [];
+            numeroTotale = 0;
+            personeTotali = 0;
+            document.getElementById("numeroTotale").value = "";
+            document.getElementById("lista").style.display = "none";
+            document.getElementById("counter").style.display = "none";
+            aggiornaLista();
+            aggiornaCounter();
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
